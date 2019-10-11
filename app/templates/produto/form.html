@@ -1,0 +1,74 @@
+<!-- CDN Bootstrap -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+<div class="col-6">
+  <form name="form-produto" onsubmit="return enviarFormulario()">
+    <!-- ID do produto -->
+    <input type="hidden" name="id" value="" />
+
+    <div class="form-group">
+      <label for="Nome">Nome do produto</label>
+      <input type="text" class="form-control" name="nome" id="nome" placeholder="Nome do produto" required>
+    </div>
+    <div class="form-group">
+          <label for="Sku">Endereço de email</label>
+          <input type="text" class="form-control" name="sku" id="sku" placeholder="Sku do produto" required>
+        </div>
+    <div class="form-group">
+      <label for="descricao">Descrição</label>
+      <textarea class="form-control" name="descricao" id="descricao" rows="3" required></textarea>
+    </div>
+    <div class="form-group">
+          <label for="tipo">Tipo</label>
+          <select class="form-control" name="tipo" id="tipo" >
+            <option value="1">Tipo 1</option>
+            <option value="2">Tipo 2</option>
+            <option value="3">Tipo 3</option>
+            <option value="4">Tipo 4</option>
+            <option value="5">Tipo 5</option>
+          </select>
+        </div>
+    
+        <!-- Resposta do envio-->
+        <div class="resp-form alert" role="alert">
+        </div>
+        <!-- /Resposta do envio-->
+
+    <button type="submit" class="btn btn-primary">Enviar</button>
+  </form>
+</div>
+
+<script>
+
+  enviarFormulario = () => {
+    let xhr = new XMLHttpRequest();
+    const csrf_token = "{{ csrf_token() }}";
+    xhr.open("POST", '/api/v1/produtos', true);
+    let divResposta = document.querySelector('.resp-form')
+
+    // Envia a informação do cabeçalho junto com a requisição.
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.setRequestHeader("X-CSRFToken", csrf_token);
+    xhr.onreadystatechange = function() { // Chama a função quando o estado mudar.
+        if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+            // Requisição finalizada. Faça o processamento aqui.
+            divResposta.innerHTML = 'Sucesso!'
+            divResposta.classList.add("alert-success")
+        } else {
+          divResposta.innerHTML = 'Erro! Tente mais tarde'
+          divResposta.classList.add("alert-warning")
+        }
+    }
+    let form = document.querySelector('form[name="form-produto"]');
+    let formData = new FormData(form);
+
+    //converte para json
+    var object = {};
+    formData.forEach((value, key) => {if(key != "id") object[key] = value});
+    var json = JSON.stringify(object);
+
+    //Envia
+    xhr.send(json);
+    return false
+  }
+</script>

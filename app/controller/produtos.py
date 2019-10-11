@@ -4,8 +4,15 @@ from app.models import Produto
 from app.schemas import produtos_fields
 
 class Produtos(Resource):
-    def get(self):
-        produtos = Produto.query.all()
+    
+    def get(self, id=None):
+        if not id:
+            produtos = Produto.query.all()
+        else:
+            produtos = Produto.query.get(id)
+            if not produtos:
+                return {"error": "Produto não existe!"}
+
         return marshal(produtos, produtos_fields, "produtos")
 
     def post(self):
